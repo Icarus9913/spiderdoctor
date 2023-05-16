@@ -1,7 +1,9 @@
 package apiserver
 
 import (
-	"github.com/spidernet-io/spiderdoctor/pkg/k8s/apis/spiderdoctor.spidernet.io/v1beta1"
+	"github.com/spidernet-io/spiderdoctor/pkg/apiserver/pkg/registry"
+	"github.com/spidernet-io/spiderdoctor/pkg/apiserver/pkg/registry/spiderdoctor/pluginreport"
+	"github.com/spidernet-io/spiderdoctor/pkg/k8s/apis/system/v1beta1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
@@ -13,13 +15,16 @@ import (
 	genericapiserver "k8s.io/apiserver/pkg/server"
 )
 
+const DefaultPluginReportPath = "/report"
+
 var (
 	Scheme    = runtime.NewScheme()
 	Codecs    = serializer.NewCodecFactory(Scheme)
-	GroupName = v1beta1.GroupVersion.Group
+	GroupName = v1beta1.GroupName
 )
 
 type ExtraConfig struct {
+	DirPathControllerReport string
 }
 
 // Config defines the config for the apiserver
@@ -63,19 +68,36 @@ func (c completedConfig) New() (*SpiderDoctorServer, error) {
 		return nil, err
 	}
 
-	s := &SpiderDoctorServer{GenericAPIServer: genericServer}
+	s := &SpiderDoctorServer{
+		GenericAPIServer: genericServer,
+	}
 
 	apiGroupInfo := genericapiserver.NewDefaultAPIGroupInfo(GroupName, Scheme, metav1.ParameterCodec, Codecs)
+
 	v1beta1storage := map[string]rest.Storage{}
-	//v1beta1storage["PluginReport"] =
+	v1beta1storage["pluginreports"] = registry.RESTInPeace(pluginreport.NewREST(Scheme, c.GenericConfig.RESTOptionsGetter))
 	apiGroupInfo.VersionedResourcesStorageMap["v1beta1"] = v1beta1storage
 
+	err = s.GenericAPIServer.InstallAPIGroup(&apiGroupInfo)
+	if nil != err {
+		return nil, err
+	}
+
 	return s, nil
+}
+
+func (s *SpiderDoctorServer) Run(stopCh <-chan struct{}) error {
+	s.GenericAPIServer.AddPostStartHookOrDie("post-starthook", func(ctx genericapiserver.PostStartHookContext) error {
+		return nil
+	})
+
+	return s.GenericAPIServer.PrepareRun().Run(stopCh)
 }
 
 func init() {
 	install.Install(Scheme)
 	utilruntime.Must(v1beta1.AddToScheme(Scheme))
+	utilruntime.Must(Scheme.SetVersionPriority(v1beta1.SchemeGroupVersion))
 
 	// we need to add the options to empty v1
 	// TODO fix the server code to avoid this

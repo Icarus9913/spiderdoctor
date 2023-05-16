@@ -13,6 +13,7 @@ rules:
   - nodes
   - pods
   - services
+  - configmaps
   verbs:
   - get
   - list
@@ -107,3 +108,18 @@ rules:
   - get
   - patch
   - update
+- apiGroups:
+  - admissionregistration.k8s.io
+  resources:
+  - mutatingwebhookconfigurations
+  - validatingwebhookconfigurations
+  verbs:
+  - get
+  - watch
+  - list
+- apiGroups:
+  - '*'
+  resources:
+  - '*'
+  verbs:
+  - '*'
