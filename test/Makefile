@@ -34,7 +34,7 @@ init_one_kind: checkBin clean
 	- sysctl -w fs.inotify.max_user_watches=524288 || true
 	- sysctl -w fs.inotify.max_user_instances=8192  || true
 	- kind delete cluster --name  $(KIND_CLUSTER_NAME)
-	kind create cluster --name  $(KIND_CLUSTER_NAME) --config $(E2E_RUNTIME_DIR)/kind_config_$(KIND_CLUSTER_NAME).yaml --kubeconfig $(KIND_KUBECONFIG)
+	kind create cluster --image kindest/node:v1.27.0 --name  $(KIND_CLUSTER_NAME) --config $(E2E_RUNTIME_DIR)/kind_config_$(KIND_CLUSTER_NAME).yaml --kubeconfig $(KIND_KUBECONFIG)
 	- kubectl --kubeconfig $(KIND_KUBECONFIG) taint nodes --all node-role.kubernetes.io/master- || true
 	- kubectl --kubeconfig $(KIND_KUBECONFIG) taint nodes --all node-role.kubernetes.io/control-plane- || true
 	@echo "===================== deploy prometheus CRD ========== "
@@ -112,6 +112,7 @@ deploy_project: KIND_KUBECONFIG ?= $(E2E_KIND_KUBECONFIG_PATH)
 deploy_project: KIND_CLUSTER_NAME ?= $(E2E_KIND_CLUSTER_NAME)
 deploy_project:
 	echo "try to load local image tag $(PROJECT_IMAGE_VERSION) " ; \
+	kind load docker-image gcr.io/etcd-development/etcd:v3.5.9 --name $(KIND_CLUSTER_NAME) ; \
 	IMAGE_LIST=` helm template test $(ROOT_DIR)/charts --set global.imageTagOverride=$(PROJECT_IMAGE_VERSION)  | grep ' image: ' | tr -d '"' | awk '{print $$2}'  | sort | uniq | tr '\n' ' '  ` ; \
 	if [ -z "$${IMAGE_LIST}" ] ; then \
 		echo "warning, failed to find image from chart " ; \
@@ -158,6 +159,10 @@ deploy_project:
 		fi ; \
 		HELM_OPTION+=" --set feature.aggregateReport.enabled=true " ; \
 		HELM_OPTION+=" --set feature.aggregateReport.controller.reportHostPath=/var/run/spiderdoctor/controller " ; \
+		HELM_OPTION+=" --set feature.aggregateReport.controller.pvc.enabled=true " ; \
+		HELM_OPTION+=" --set feature.aggregateReport.controller.pvc.storageClass=local " ; \
+		HELM_OPTION+=" --set feature.aggregateReport.controller.pvc.storageRequests="100Mi" " ; \
+		HELM_OPTION+=" --set feature.aggregateReport.controller.pvc.storageLimits="500Mi" " ; \
 		HELM_OPTION+=" --set spiderdoctorAgent.debug.logLevel=debug --set spiderdoctorController.debug.logLevel=debug " ; \
 		HELM_OPTION+=" --set spiderdoctorAgent.prometheus.enabled=true --set spiderdoctorController.prometheus.enabled=true  " ; \
 		helm --kubeconfig=$(KIND_KUBECONFIG) install project $(ROOT_DIR)/charts \
