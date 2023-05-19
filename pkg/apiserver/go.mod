@@ -7,11 +7,11 @@ go 1.20
 require (
 	github.com/google/gofuzz v1.2.0
 	github.com/spf13/cobra v1.7.0
-	k8s.io/apimachinery v0.0.0-20230516234833-8d8634786e1c
-	k8s.io/apiserver v0.0.0-20230516013442-503fadf9e775
-	k8s.io/client-go v0.0.0-20230517010017-2a5f18df73b7
-	k8s.io/code-generator v0.0.0-20230516165233-03cdae3b9a25
-	k8s.io/component-base v0.0.0-20230516012726-18782b4b48a0
+	k8s.io/apimachinery v0.27.2
+	k8s.io/apiserver v0.27.2
+	k8s.io/client-go v0.27.2
+	k8s.io/code-generator v0.27.2
+	k8s.io/component-base v0.27.2
 	k8s.io/kube-openapi v0.0.0-20230515203736-54b630e78af5
 	k8s.io/utils v0.0.0-20230406110748-d93618cff8a2
 	sigs.k8s.io/structured-merge-diff/v4 v4.2.3
