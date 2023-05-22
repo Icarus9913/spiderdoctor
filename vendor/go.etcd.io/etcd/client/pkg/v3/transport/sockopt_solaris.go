@@ -1,4 +1,4 @@
-// Copyright The OpenTelemetry Authors
+// Copyright 2021 The etcd Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,15 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package otelhttp // import "go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+//go:build solaris
+// +build solaris
 
-// Version is the current release version of the otelhttp instrumentation.
-func Version() string {
-	return "0.35.1"
-	// This string is updated by the pre_release.sh script during release
+package transport
+
+import (
+	"fmt"
+	"syscall"
+
+	"golang.org/x/sys/unix"
+)
+
+func setReusePort(network, address string, c syscall.RawConn) error {
+	return fmt.Errorf("port reuse is not supported on Solaris")
 }
 
-// SemVersion is the semantic version to be supplied to tracer/meter creation.
-func SemVersion() string {
-	return "semver:" + Version()
+func setReuseAddress(network, address string, conn syscall.RawConn) error {
+	return conn.Control(func(fd uintptr) {
+		syscall.SetsockoptInt(int(fd), syscall.SOL_SOCKET, unix.SO_REUSEADDR, 1)
+	})
 }

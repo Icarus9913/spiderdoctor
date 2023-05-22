@@ -1,6 +1,7 @@
 package apiserver
 
 import (
+	"github.com/spidernet-io/spiderdoctor/pkg/apiserver/pkg/filters"
 	"github.com/spidernet-io/spiderdoctor/pkg/apiserver/pkg/registry"
 	"github.com/spidernet-io/spiderdoctor/pkg/apiserver/pkg/registry/spiderdoctor/pluginreport"
 	"github.com/spidernet-io/spiderdoctor/pkg/k8s/apis/system/v1beta1"
@@ -13,6 +14,7 @@ import (
 	"k8s.io/apiserver/pkg/apis/audit/install"
 	"k8s.io/apiserver/pkg/registry/rest"
 	genericapiserver "k8s.io/apiserver/pkg/server"
+	"net/http"
 )
 
 const DefaultPluginReportPath = "/report"
@@ -63,6 +65,13 @@ func (cfg *Config) Complete() CompletedConfig {
 }
 
 func (c completedConfig) New() (*SpiderDoctorServer, error) {
+	handlerChainFunc := c.GenericConfig.BuildHandlerChainFunc
+	c.GenericConfig.BuildHandlerChainFunc = func(apiHandler http.Handler, c *genericapiserver.Config) http.Handler {
+		handler := handlerChainFunc(apiHandler, c)
+		handler = filters.WithRequestQuery(handler)
+		return handler
+	}
+
 	genericServer, err := c.GenericConfig.New("spiderdoctor-apiserver", genericapiserver.NewEmptyDelegate())
 	if err != nil {
 		return nil, err

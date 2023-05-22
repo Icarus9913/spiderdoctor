@@ -2,11 +2,20 @@ package pluginreport
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"github.com/spidernet-io/spiderdoctor/pkg/apiserver/pkg/request"
+	"github.com/spidernet-io/spiderdoctor/pkg/k8s/client/clientset/versioned/scheme"
+	"io"
+	"k8s.io/apimachinery/pkg/api/meta"
+	"k8s.io/apimachinery/pkg/apis/meta/internalversion"
+	"k8s.io/apimachinery/pkg/runtime/schema"
 	"os"
 	"path"
+	"strconv"
+	"strings"
+	"time"
 
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/watch"
 	"k8s.io/apiserver/pkg/registry/generic"
@@ -49,8 +58,9 @@ func NewREST(scheme *runtime.Scheme, optsGetter generic.RESTOptionsGetter) (*reg
 		DeleteStrategy:          strategy,
 		EnableGarbageCollection: true,
 
-		Storage:        dryRunnableStorage,
-		DestroyFunc:    destroyFunc,
+		Storage:     dryRunnableStorage,
+		DestroyFunc: destroyFunc,
+
 		TableConvertor: rest.NewDefaultTableConvertor(v1beta1.Resource("pluginreports")),
 	}
 
@@ -90,39 +100,128 @@ func (p pluginReportStorage) Watch(ctx context.Context, key string, opts storage
 
 }
 
-func (p pluginReportStorage) Get(ctx context.Context, key string, opts storage.GetOptions, objPtr runtime.Object) error {
-	klog.Infof("Get called with key: %v on resource %v\n", key, p.resourceName)
-
-	filelist, e := os.ReadDir("/report")
-	if e != nil {
-		return fmt.Errorf("failed to read directory %s, error=%v", "/report", e)
+func (p pluginReportStorage) Get(ctx context.Context, key string, _ storage.GetOptions, objPtr runtime.Object) error {
+	var opts internalversion.ListOptions
+	query := request.RequestQueryFrom(ctx)
+	err := scheme.ParameterCodec.DecodeParameters(query, v1beta1.SchemeGroupVersion, &opts)
+	if nil != err {
+		return err
 	}
 
+	klog.Infof("Get called with key: %v on resource %v\n", key, p.resourceName)
+
+	time.Now().Unix()
+	split := strings.Split(key, "-")
+	timestampStr := split[len(split)-1]
+	timestamp, err := strconv.ParseInt(timestampStr, 10, 64)
+	if nil != err {
+		fmt.Errorf("failed to parse timestampt %s, error: %w", timestampStr, err)
+	}
+	timeStr := time.Unix(timestamp, 0).Format(time.RFC3339)
+
+	dir := "/report"
+	readDir, err := os.ReadDir(dir)
+	if nil != err {
+		return err
+	}
 	var fileName string
-	fileList := []string{}
-	for _, item := range filelist {
+	for _, item := range readDir {
 		if item.IsDir() {
 			continue
 		}
-		fileList = append(fileList, path.Join("/report", item.Name()))
-		fileName = fmt.Sprintf("%s;", item.Name())
+
+		if strings.Contains(item.Name(), timeStr) {
+			fileName = path.Join(dir, item.Name())
+		}
+	}
+	if strings.EqualFold(fileName, "") {
+		return fmt.Errorf("no task found")
+	}
+
+	file, err := os.Open(fileName)
+	if nil != err {
+		return err
+	}
+	readAll, err := io.ReadAll(file)
+	if nil != err {
+		return err
 	}
 
 	pluginReport := objPtr.(*v1beta1.PluginReport)
-	pluginReport.TypeMeta = metav1.TypeMeta{
-		Kind:       "PluginReport",
-		APIVersion: v1beta1.GroupVersion.String(),
+	err = json.Unmarshal(readAll, &(pluginReport.Spec))
+	if nil != err {
+		return err
 	}
-	pluginReport.ObjectMeta = metav1.ObjectMeta{
-		Name: "test-wk",
-	}
-	pluginReport.Spec.TaskName = fileName
+	pluginReport.Name = key
+	pluginReport.GetObjectKind().SetGroupVersionKind(schema.GroupVersionKind{
+		Group:   v1beta1.GroupName,
+		Version: "v1beta1",
+		Kind:    "PluginReport",
+	})
 
 	return nil
 }
 
 func (p pluginReportStorage) GetList(ctx context.Context, key string, opts storage.ListOptions, listObj runtime.Object) error {
-	return fmt.Errorf("GetList API not implement")
+	dir := "/report"
+
+	readDir, err := os.ReadDir(dir)
+	if nil != err {
+		return fmt.Errorf("failed to read directory %s, error: %w", dir, err)
+	}
+
+	pluginReportList := listObj.(*v1beta1.PluginReportList)
+	var resList []runtime.Object
+	for _, item := range readDir {
+		if item.IsDir() {
+			continue
+		}
+
+		fileName := path.Join("/report", item.Name())
+		file, err := os.Open(fileName)
+		if nil != err {
+			return fmt.Errorf("failed to open file %s, error: %w", fileName, err)
+		}
+		readAll, err := io.ReadAll(file)
+		if nil != err {
+			return fmt.Errorf("failed to read file %s, error: %w", fileName, err)
+		}
+
+		pluginReport := &v1beta1.PluginReport{}
+		err = json.Unmarshal(readAll, &(pluginReport.Spec))
+		if nil != err {
+			return fmt.Errorf("failed to unmarshal %#v into value %#v", readAll, pluginReport)
+		}
+
+		split := strings.Split(fileName, "_")
+		timeStr := split[len(split)-1]
+		times, err := time.Parse(time.RFC3339, timeStr)
+		if nil != err {
+			return fmt.Errorf("failed to parse time %s, error: %w", timeStr, err)
+		}
+
+		pluginReport.Name = fmt.Sprintf("%s-%d", pluginReport.Spec.TaskName, times.Unix())
+		pluginReport.GetObjectKind().SetGroupVersionKind(schema.GroupVersionKind{
+			Group:   v1beta1.GroupName,
+			Version: "v1beta1",
+			Kind:    "PluginReport",
+		})
+
+		resList = append(resList, pluginReport)
+	}
+
+	err = meta.SetList(pluginReportList, resList)
+	if nil != err {
+		return err
+	}
+
+	pluginReportList.GetObjectKind().SetGroupVersionKind(schema.GroupVersionKind{
+		Group:   v1beta1.GroupName,
+		Version: "v1beta",
+		Kind:    "PluginReportList",
+	})
+
+	return nil
 }
 
 func (p pluginReportStorage) GuaranteedUpdate(ctx context.Context, key string, destination runtime.Object, ignoreNotFound bool, preconditions *storage.Preconditions, tryUpdate storage.UpdateFunc, cachedExistingObject runtime.Object) error {

@@ -1,0 +1,516 @@
+{
+	"TaskName": "nethttp.test-agent",
+	"TaskSpec": {
+		"schedule": {
+			"schedule": "1 1",
+			"roundTimeoutMinute": 1,
+			"roundNumber": 2
+		},
+		"target": {
+			"targetAgent": {
+				"testIPv4": true,
+				"testIPv6": true,
+				"testEndpoint": true,
+				"testClusterIp": true,
+				"testNodePort": true,
+				"testLoadBalancer": true,
+				"testIngress": true
+			}
+		},
+		"request": {
+			"durationInSecond": 2,
+			"qps": 2,
+			"perRequestTimeoutInMS": 1000
+		},
+		"success": {
+			"successRate": 1,
+			"meanAccessDelayInMs": 10000
+		}
+	},
+	"RoundNumber": 1,
+	"RoundResult": "fail",
+	"NodeName": "spiderdoctor-control-plane",
+	"PodName": "spiderdoctor-agent-pcd8x",
+	"FailedReason": "test AgentNodePortV6IP_fc00:f853:ccd:e793::5_32488: Success Rate 0 is lower than request 1",
+	"StartTimeStamp": "2023-05-23T07:08:35.024215471Z",
+	"EndTimeStamp": "2023-05-23T07:09:07.529242995Z",
+	"RoundDuraiton": "32.505027572s",
+	"ReportType": "agent test report",
+	"Detail": {
+		"Detail": [
+			{
+				"FailureReason": "",
+				"MeanDelay": "5.553674ms",
+				"Metrics": {
+					"latencies": {
+						"total": 22214696,
+						"mean": 5553674,
+						"50th": 5179102,
+						"90th": 7791579,
+						"95th": 7791579,
+						"99th": 7791579,
+						"max": 7791579,
+						"min": 4064912
+					},
+					"bytes_in": {
+						"total": 1144,
+						"mean": 286
+					},
+					"bytes_out": {
+						"total": 0,
+						"mean": 0
+					},
+					"earliest": "2023-05-23T07:08:35.997765257Z",
+					"latest": "2023-05-23T07:08:37.495984955Z",
+					"end": "2023-05-23T07:08:37.500184042Z",
+					"duration": 1498219698,
+					"wait": 4199087,
+					"requests": 4,
+					"rate": 2.6698354088787317,
+					"throughput": 2.662373527231956,
+					"success": 1,
+					"status_codes": {
+						"200": 4
+					},
+					"errors": []
+				},
+				"Succeed": "true",
+				"SucceedRate": "1",
+				"TargetMethod": "GET",
+				"TargetName": "AgentPodV4IP_spiderdoctor-agent-86rsd_172.40.1.53",
+				"TargetUrl": "http://172.40.1.53:80"
+			},
+			{
+				"FailureReason": "",
+				"MeanDelay": "7.788829ms",
+				"Metrics": {
+					"latencies": {
+						"total": 31155317,
+						"mean": 7788829,
+						"50th": 6857960,
+						"90th": 12002891,
+						"95th": 12002891,
+						"99th": 12002891,
+						"max": 12002891,
+						"min": 5436506
+					},
+					"bytes_in": {
+						"total": 1140,
+						"mean": 285
+					},
+					"bytes_out": {
+						"total": 0,
+						"mean": 0
+					},
+					"earliest": "2023-05-23T07:08:35.998527403Z",
+					"latest": "2023-05-23T07:08:37.496086957Z",
+					"end": "2023-05-23T07:08:37.501523463Z",
+					"duration": 1497559554,
+					"wait": 5436506,
+					"requests": 4,
+					"rate": 2.6710123075345824,
+					"throughput": 2.661350955238033,
+					"success": 1,
+					"status_codes": {
+						"200": 4
+					},
+					"errors": []
+				},
+				"Succeed": "true",
+				"SucceedRate": "1",
+				"TargetMethod": "GET",
+				"TargetName": "AgentLoadbalancerV4IP_172.22.0.51:80",
+				"TargetUrl": "http://172.22.0.51:80"
+			},
+			{
+				"FailureReason": "",
+				"MeanDelay": "8.453123ms",
+				"Metrics": {
+					"latencies": {
+						"total": 33812493,
+						"mean": 8453123,
+						"50th": 5191112,
+						"90th": 20539806,
+						"95th": 20539806,
+						"99th": 20539806,
+						"max": 20539806,
+						"min": 2890463
+					},
+					"bytes_in": {
+						"total": 1144,
+						"mean": 286
+					},
+					"bytes_out": {
+						"total": 0,
+						"mean": 0
+					},
+					"earliest": "2023-05-23T07:08:36.009013687Z",
+					"latest": "2023-05-23T07:08:37.501626579Z",
+					"end": "2023-05-23T07:08:37.504517042Z",
+					"duration": 1492612892,
+					"wait": 2890463,
+					"requests": 4,
+					"rate": 2.6798642979964296,
+					"throughput": 2.6746847385039803,
+					"success": 1,
+					"status_codes": {
+						"200": 4
+					},
+					"errors": []
+				},
+				"Succeed": "true",
+				"SucceedRate": "1",
+				"TargetMethod": "GET",
+				"TargetName": "AgentPodV4IP_spiderdoctor-agent-pcd8x_172.40.0.22",
+				"TargetUrl": "http://172.40.0.22:80"
+			},
+			{
+				"FailureReason": "",
+				"MeanDelay": "12.466217ms",
+				"Metrics": {
+					"latencies": {
+						"total": 49864870,
+						"mean": 12466217,
+						"50th": 11474342,
+						"90th": 24242581,
+						"95th": 24242581,
+						"99th": 24242581,
+						"max": 24242581,
+						"min": 2673605
+					},
+					"bytes_in": {
+						"total": 1140,
+						"mean": 285
+					},
+					"bytes_out": {
+						"total": 0,
+						"mean": 0
+					},
+					"earliest": "2023-05-23T07:08:36.004440887Z",
+					"latest": "2023-05-23T07:08:37.504436152Z",
+					"end": "2023-05-23T07:08:37.507109757Z",
+					"duration": 1499995265,
+					"wait": 2673605,
+					"requests": 4,
+					"rate": 2.666675084471017,
+					"throughput": 2.66193043581185,
+					"success": 1,
+					"status_codes": {
+						"200": 4
+					},
+					"errors": []
+				},
+				"Succeed": "true",
+				"SucceedRate": "1",
+				"TargetMethod": "GET",
+				"TargetName": "AgentPodV6IP_spiderdoctor-agent-pcd8x_fd40::16",
+				"TargetUrl": "http://fd40::16:80"
+			},
+			{
+				"FailureReason": "",
+				"MeanDelay": "20.655793ms",
+				"Metrics": {
+					"latencies": {
+						"total": 82623172,
+						"mean": 20655793,
+						"50th": 9149475,
+						"90th": 61357795,
+						"95th": 61357795,
+						"99th": 61357795,
+						"max": 61357795,
+						"min": 2966426
+					},
+					"bytes_in": {
+						"total": 1136,
+						"mean": 284
+					},
+					"bytes_out": {
+						"total": 0,
+						"mean": 0
+					},
+					"earliest": "2023-05-23T07:08:36.00980503Z",
+					"latest": "2023-05-23T07:08:37.504790578Z",
+					"end": "2023-05-23T07:08:37.507757004Z",
+					"duration": 1494985548,
+					"wait": 2966426,
+					"requests": 4,
+					"rate": 2.6756111491186134,
+					"throughput": 2.670312579727606,
+					"success": 1,
+					"status_codes": {
+						"200": 4
+					},
+					"errors": []
+				},
+				"Succeed": "true",
+				"SucceedRate": "1",
+				"TargetMethod": "GET",
+				"TargetName": "AgentClusterV6IP_fd41::de1d:80",
+				"TargetUrl": "http://fd41::de1d:80"
+			},
+			{
+				"FailureReason": "",
+				"MeanDelay": "12.837554ms",
+				"Metrics": {
+					"latencies": {
+						"total": 51350218,
+						"mean": 12837554,
+						"50th": 13168534,
+						"90th": 21563463,
+						"95th": 21563463,
+						"99th": 21563463,
+						"max": 21563463,
+						"min": 3449687
+					},
+					"bytes_in": {
+						"total": 1140,
+						"mean": 285
+					},
+					"bytes_out": {
+						"total": 0,
+						"mean": 0
+					},
+					"earliest": "2023-05-23T07:08:36.008786941Z",
+					"latest": "2023-05-23T07:08:37.506191039Z",
+					"end": "2023-05-23T07:08:37.509640726Z",
+					"duration": 1497404098,
+					"wait": 3449687,
+					"requests": 4,
+					"rate": 2.671289604017098,
+					"throughput": 2.6651496901145504,
+					"success": 1,
+					"status_codes": {
+						"200": 4
+					},
+					"errors": []
+				},
+				"Succeed": "true",
+				"SucceedRate": "1",
+				"TargetMethod": "GET",
+				"TargetName": "AgentNodePortV4IP_172.22.0.5_31621",
+				"TargetUrl": "http://172.22.0.5:31621"
+			},
+			{
+				"FailureReason": "",
+				"MeanDelay": "11.902389ms",
+				"Metrics": {
+					"latencies": {
+						"total": 47609557,
+						"mean": 11902389,
+						"50th": 13292333,
+						"90th": 16717912,
+						"95th": 16717912,
+						"99th": 16717912,
+						"max": 16717912,
+						"min": 4306978
+					},
+					"bytes_in": {
+						"total": 1144,
+						"mean": 286
+					},
+					"bytes_out": {
+						"total": 0,
+						"mean": 0
+					},
+					"earliest": "2023-05-23T07:08:36.009299602Z",
+					"latest": "2023-05-23T07:08:37.507268622Z",
+					"end": "2023-05-23T07:08:37.5115756Z",
+					"duration": 1497969020,
+					"wait": 4306978,
+					"requests": 4,
+					"rate": 2.6702821931524325,
+					"throughput": 2.6626265781555807,
+					"success": 1,
+					"status_codes": {
+						"200": 4
+					},
+					"errors": []
+				},
+				"Succeed": "true",
+				"SucceedRate": "1",
+				"TargetMethod": "GET",
+				"TargetName": "AgentClusterV4IP_172.41.65.20:80",
+				"TargetUrl": "http://172.41.65.20:80"
+			},
+			{
+				"FailureReason": "",
+				"MeanDelay": "17.8326ms",
+				"Metrics": {
+					"latencies": {
+						"total": 71330402,
+						"mean": 17832600,
+						"50th": 20469896,
+						"90th": 25667018,
+						"95th": 25667018,
+						"99th": 25667018,
+						"max": 25667018,
+						"min": 4723591
+					},
+					"bytes_in": {
+						"total": 2184,
+						"mean": 546
+					},
+					"bytes_out": {
+						"total": 0,
+						"mean": 0
+					},
+					"earliest": "2023-05-23T07:08:36.009542249Z",
+					"latest": "2023-05-23T07:08:37.508332738Z",
+					"end": "2023-05-23T07:08:37.513056329Z",
+					"duration": 1498790489,
+					"wait": 4723591,
+					"requests": 4,
+					"rate": 2.6688186436710164,
+					"throughput": 2.660434014691768,
+					"success": 1,
+					"status_codes": {
+						"200": 4
+					},
+					"errors": []
+				},
+				"Succeed": "true",
+				"SucceedRate": "1",
+				"TargetMethod": "GET",
+				"TargetName": "AgentIngress_http://172.22.0.50//spiderdoctoragent",
+				"TargetUrl": "http://172.22.0.50//spiderdoctoragent"
+			},
+			{
+				"FailureReason": "Success Rate 0.5 is lower than request 1",
+				"MeanDelay": "15.005608471s",
+				"Metrics": {
+					"latencies": {
+						"total": 60022433884,
+						"mean": 15005608471,
+						"50th": 15004990748,
+						"90th": 30008796495,
+						"95th": 30008796495,
+						"99th": 30008796495,
+						"max": 30008796495,
+						"min": 3655893
+					},
+					"bytes_in": {
+						"total": 568,
+						"mean": 142
+					},
+					"bytes_out": {
+						"total": 0,
+						"mean": 0
+					},
+					"earliest": "2023-05-23T07:08:36.01083319Z",
+					"latest": "2023-05-23T07:08:37.512184992Z",
+					"end": "2023-05-23T07:09:06.510810871Z",
+					"duration": 1501351802,
+					"wait": 28998625879,
+					"requests": 4,
+					"rate": 2.6642656269313223,
+					"throughput": 0.06557381847678867,
+					"success": 0.5,
+					"status_codes": {
+						"0": 2,
+						"200": 2
+					},
+					"errors": [
+						"Get \"http://fc00:f853:ccd:e793::50:80\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)"
+					]
+				},
+				"Succeed": "true",
+				"SucceedRate": "0.5",
+				"TargetMethod": "GET",
+				"TargetName": "AgentLoadbalancerV6IP_fc00:f853:ccd:e793::50:80",
+				"TargetUrl": "http://fc00:f853:ccd:e793::50:80"
+			},
+			{
+				"FailureReason": "Success Rate 0 is lower than request 1",
+				"MeanDelay": "30.001204891s",
+				"Metrics": {
+					"latencies": {
+						"total": 120004819567,
+						"mean": 30001204891,
+						"50th": 30001110822,
+						"90th": 30002017872,
+						"95th": 30002017872,
+						"99th": 30002017872,
+						"max": 30002017872,
+						"min": 30000580050
+					},
+					"bytes_in": {
+						"total": 0,
+						"mean": 0
+					},
+					"bytes_out": {
+						"total": 0,
+						"mean": 0
+					},
+					"earliest": "2023-05-23T07:08:35.996030273Z",
+					"latest": "2023-05-23T07:08:37.495336244Z",
+					"end": "2023-05-23T07:09:07.496122923Z",
+					"duration": 1499305971,
+					"wait": 30000786679,
+					"requests": 4,
+					"rate": 2.6679010671398173,
+					"throughput": 0,
+					"success": 0,
+					"status_codes": {
+						"0": 4
+					},
+					"errors": [
+						"Get \"http://fd40:0:0:1::35:80\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)"
+					]
+				},
+				"Succeed": "true",
+				"SucceedRate": "0",
+				"TargetMethod": "GET",
+				"TargetName": "AgentPodV6IP_spiderdoctor-agent-86rsd_fd40:0:0:1::35",
+				"TargetUrl": "http://fd40:0:0:1::35:80"
+			},
+			{
+				"FailureReason": "Success Rate 0 is lower than request 1",
+				"MeanDelay": "30.008629719s",
+				"Metrics": {
+					"latencies": {
+						"total": 120034518877,
+						"mean": 30008629719,
+						"50th": 30000769527,
+						"90th": 30032378598,
+						"95th": 30032378598,
+						"99th": 30032378598,
+						"max": 30032378598,
+						"min": 30000601224
+					},
+					"bytes_in": {
+						"total": 0,
+						"mean": 0
+					},
+					"bytes_out": {
+						"total": 0,
+						"mean": 0
+					},
+					"earliest": "2023-05-23T07:08:35.996865716Z",
+					"latest": "2023-05-23T07:08:37.496044589Z",
+					"end": "2023-05-23T07:09:07.528423187Z",
+					"duration": 1499178873,
+					"wait": 30032378598,
+					"requests": 4,
+					"rate": 2.668127247548265,
+					"throughput": 0,
+					"success": 0,
+					"status_codes": {
+						"0": 4
+					},
+					"errors": [
+						"Get \"http://fc00:f853:ccd:e793::5:32488\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)"
+					]
+				},
+				"Succeed": "true",
+				"SucceedRate": "0",
+				"TargetMethod": "GET",
+				"TargetName": "AgentNodePortV6IP_fc00:f853:ccd:e793::5_32488",
+				"TargetUrl": "http://fc00:f853:ccd:e793::5:32488"
+			}
+		],
+		"FailureReason": "test AgentNodePortV6IP_fc00:f853:ccd:e793::5_32488: Success Rate 0 is lower than request 1",
+		"Succeed": "false",
+		"TargetNumber": "11",
+		"TargetType": "spiderdoctor agent"
+	}
+}

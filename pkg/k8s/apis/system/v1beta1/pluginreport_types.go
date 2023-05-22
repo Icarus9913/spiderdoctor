@@ -30,17 +30,17 @@ type PluginReportList struct {
 
 // PluginReportSpec defines the desired state of PluginReport
 type PluginReportSpec struct {
-	TaskName string `json:"taskName"`
+	TaskName string `json:"TaskName"`
 	//TaskSpec       interface{} `json:"taskSpec"`
-	RoundNumber    int         `json:"roundNumber"`
-	RoundResult    string      `json:"roundResult"`
-	NodeName       string      `json:"nodeName"`
-	PodName        string      `json:"podName"`
-	FailedReason   string      `json:"failedReason"`
-	StartTimeStamp metav1.Time `json:"startTimeStamp"`
-	EndTimeStamp   metav1.Time `json:"endTimeStamp"`
-	RoundDuraiton  string      `json:"roundDuraiton"`
-	ReportType     string      `json:"reportType"`
+	RoundNumber    int         `json:"RoundNumber"`
+	RoundResult    string      `json:"RoundResult"`
+	NodeName       string      `json:"NodeName"`
+	PodName        string      `json:"PodName"`
+	FailedReason   string      `json:"FailedReason"`
+	StartTimeStamp metav1.Time `json:"StartTimeStamp"`
+	EndTimeStamp   metav1.Time `json:"EndTimeStamp"`
+	RoundDuraiton  string      `json:"RoundDuraiton"`
+	ReportType     string      `json:"ReportType"`
 	//Detail         interface{} `json:"detail"`
 }
 
