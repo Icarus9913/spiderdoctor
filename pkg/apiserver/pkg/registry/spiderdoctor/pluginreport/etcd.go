@@ -4,11 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/spidernet-io/spiderdoctor/pkg/apiserver/pkg/request"
-	"github.com/spidernet-io/spiderdoctor/pkg/k8s/client/clientset/versioned/scheme"
+	"github.com/spidernet-io/spiderdoctor/pkg/apiserver/pkg/printers"
 	"io"
 	"k8s.io/apimachinery/pkg/api/meta"
-	"k8s.io/apimachinery/pkg/apis/meta/internalversion"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"os"
 	"path"
@@ -20,7 +18,6 @@ import (
 	"k8s.io/apimachinery/pkg/watch"
 	"k8s.io/apiserver/pkg/registry/generic"
 	genericregistry "k8s.io/apiserver/pkg/registry/generic/registry"
-	"k8s.io/apiserver/pkg/registry/rest"
 	"k8s.io/apiserver/pkg/storage"
 	"k8s.io/apiserver/pkg/storage/storagebackend/factory"
 	"k8s.io/klog/v2"
@@ -61,7 +58,7 @@ func NewREST(scheme *runtime.Scheme, optsGetter generic.RESTOptionsGetter) (*reg
 		Storage:     dryRunnableStorage,
 		DestroyFunc: destroyFunc,
 
-		TableConvertor: rest.NewDefaultTableConvertor(v1beta1.Resource("pluginreports")),
+		TableConvertor: printers.NewTableGenerator(v1beta1.Resource("pluginreports")),
 	}
 
 	return &registry.REST{Store: store}, nil
@@ -100,22 +97,21 @@ func (p pluginReportStorage) Watch(ctx context.Context, key string, opts storage
 
 }
 
-func (p pluginReportStorage) Get(ctx context.Context, key string, _ storage.GetOptions, objPtr runtime.Object) error {
-	var opts internalversion.ListOptions
-	query := request.RequestQueryFrom(ctx)
-	err := scheme.ParameterCodec.DecodeParameters(query, v1beta1.SchemeGroupVersion, &opts)
-	if nil != err {
-		return err
-	}
+func (p pluginReportStorage) Get(ctx context.Context, key string, opts storage.GetOptions, objPtr runtime.Object) error {
+	/*	var options internalversion.ListOptions
+		query := request.RequestQueryFrom(ctx)
+		err := scheme.ParameterCodec.DecodeParameters(query, v1beta1.SchemeGroupVersion, &options)
+		if nil != err {
+			return err
+		}*/
 
 	klog.Infof("Get called with key: %v on resource %v\n", key, p.resourceName)
 
-	time.Now().Unix()
 	split := strings.Split(key, "-")
 	timestampStr := split[len(split)-1]
 	timestamp, err := strconv.ParseInt(timestampStr, 10, 64)
 	if nil != err {
-		fmt.Errorf("failed to parse timestampt %s, error: %w", timestampStr, err)
+		return fmt.Errorf("failed to parse timestampt %s, error: %w", timestampStr, err)
 	}
 	timeStr := time.Unix(timestamp, 0).Format(time.RFC3339)
 
